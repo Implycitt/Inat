@@ -3,21 +3,7 @@ from selenium.webdriver.common.by import By
 import os
 from dotenv import load_dotenv
 
-def connectUrl(driver: webdriver, url: str) -> bool:
-    try:
-        driver.get(url)
-        return driver
-    except:
-        return False
-
-def terminate(driver: webdriver) -> None:
-    driver.quit()
-
-def typeIntoElement(element, text):
-    return element.send_keys(text)
-
-def pressButton(buttonElement):
-    buttonElement.click()
+from driver import Driver
 
 def getHeaderBody():
     with open("./in/message.txt", 'r') as file:
@@ -25,41 +11,43 @@ def getHeaderBody():
         header, body = map(str, wholeFile.split('\n\n'))
     return (header, body.strip('\n'))
 
-def login(driver: webdriver) -> None:
+def login(webDriver: Driver) -> None:
     email, password = map(str, (os.getenv('EMAIL'), os.getenv('PASSWORD')))
-    connectUrl(driver, "https://www.inaturalist.org/login")
+    primaryDriver = webDriver.driver
+    webDriver.connectUrl("https://Inaturalist.org/login")
 
-    emailField = driver.find_element(By.ID, "user_email")
-    passwordField = driver.find_element(By.ID, "user_password")
+    emailField = primaryDriver.find_element(By.ID, "user_email")
+    passwordField = primaryDriver.find_element(By.ID, "user_password")
 
-    typeIntoElement(emailField, email)
-    typeIntoElement(passwordField, password)
+    webDriver.typeIntoElement(emailField, email)
+    webDriver.typeIntoElement(passwordField, password)
 
-    pressButton(driver.find_element(By.NAME, "commit"))
+    webDriver.pressButton(primaryDriver.find_element(By.NAME, "commit"))
 
-def sendMessage(driver: webdriver) -> None:
+def sendMessage(webDriver: Driver) -> None:
     header, body = map(str, getHeaderBody())
+    primaryDriver = webDriver.driver
 
-    headerField = driver.find_element(By.ID, "message_subject")
-    bodyField = driver.find_element(By.ID, "message_body")
+    headerField = primaryDriver.find_element(By.ID, "message_subject")
+    bodyField = primaryDriver.find_element(By.ID, "message_body")
 
-    typeIntoElement(headerField, header)
-    typeIntoElement(bodyField, body)
+    webDriver.typeIntoElement(headerField, header)
+    webDriver.typeIntoElement(bodyField, body)
 
-    pressButton(driver.find_element(By.NAME, "commit"))
+    webDriver.pressButton(primaryDriver.find_element(By.NAME, "commit"))
 
 def Messenger() -> None:
     load_dotenv(dotenv_path="./in/.env")
     baseUrl = "https://www.inaturalist.org/messages/new?to="
 
     with open("./out/users.txt", 'r') as file:
-        users: tuple() = tuple(line.strip('\n'), for line in file)
+        users: tuple() = tuple(line.strip('\n') for line in file)
 
-    driver = webdriver.Chrome()
-    login(driver)
+    webDriver = Driver()
+    login(webDriver)
 
     for user in users:
         messageUrl = baseUrl + user
-        connectUrl(driver, messageUrl)
-        sendMessage(driver)
+        connectUrl(webDriver, messageUrl)
+        sendMessage(webDriver)
 

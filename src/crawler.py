@@ -1,48 +1,32 @@
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from dotenv import load_dotenv
+from driver import Driver
 
-def getPage(url: str) -> Response | None:
-    response: Response = requests.get(url)
+import messenger
 
-    if (response.status_code == 200):
-        return response
-    return False
+unvisitedUrls = set()
+webDriver = Driver()
+primaryDriver = webDriver.driver
 
-def parsePageAll(page: Response, elementType: str, className: str) -> list:
-    soup: BeautifulSoup = BeautifulSoup(page.text, 'html.parser')
+def findNext() -> set:
+    userLinks = primaryDriver.find_elements(By.CLASS_NAME, "userlink")
+    userLinks += primaryDriver.find_elements(By.CLASS_NAME, "large")
+    userLinks = prettyUserList(userLinks)
+    print(userLinks)
 
-    return soup.find_all(elementType, class_=className)
+def prettyUserList(userLinks: set) -> set:
+    outLinks = set()
+    for element in userLinks:
+        outLinks.add(element.text)
+    return outLinks
 
-def parsePageSingle(page: Response, elementType: str, className: str) -> Tag:
-    soup: BeautifulSoup = BeautifulSoup(page.text, 'html.parser')
-
-    return soup.find(elementType, class_=className)
-
-def parseWithinPage(page: Response, elementType: str, className: str) -> Tag:
-    return page.find(elementType)[className]
-    
-def crawl(url: str, visitedUrls=set()) -> None:
-    if url in visitedUrls:
-        return
-
-    visitedUrls.add(url)
-
-    page: Response = getPage(url)
-
-    if not page:
-        print("page returned bad")
-        return
-
-    quotes = parsePageAll(page, 'span', 'text')
-
-    print("Number of quotes: ", len(quotes))
-        
-    nextPage = parsePageSingle(page, 'li', 'next')
-    if nextPage:
-        nextUrl = parseWithinPage(nextPage, 'a', 'href')
-        crawl(url + nextUrl, visitedUrls)
+def crawl(unvisistedUrls: set) -> None:
+    pass
 
 if __name__ == "__main__":
-    url = "http://quotes.toscrape.com"
-    crawl(url, set())
-    
+    load_dotenv(dotenv_path="./in/.env")
+    webDriver.connectUrl("https://inaturalist.org/people")
+    messenger.login(webDriver)
+    findNext()
+    input()
