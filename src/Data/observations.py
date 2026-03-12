@@ -32,13 +32,12 @@
     </pre>
 ''' 
 
-import compression
 import requests, time, json, os, glob, math
 import pandas as pd
 
-def fetchProjectData(projectSlug: str, startId: str, endId: str, filename: str) -> None:
+def fetchProjectData(projectSlug: str, startId: int, endId: int, filename: str) -> None:
     baseUrl: str = "https://api.inaturalist.org/v1/observations"
-    filepath: str = "Research/" + filename
+    filepath: str = os.path.join("Research", filename)
     
     params = {
         "project_id": projectSlug,
@@ -49,8 +48,7 @@ def fetchProjectData(projectSlug: str, startId: str, endId: str, filename: str) 
     }
 
     with open(filepath, "w", encoding="utf-8") as file:
-        currentId = startId
-        count = 0
+        currentId: int = startId
         
         while currentId < endId:
             try:
@@ -81,7 +79,6 @@ def fetchProjectData(projectSlug: str, startId: str, endId: str, filename: str) 
                     }
                     
                     file.write(json.dumps(flattened) + "\n")
-                    count += 1
 
                 params["id_above"] = currentId
                 
@@ -107,7 +104,6 @@ def syncProject(projectSlug: str) -> None:
     if lastUpdate:
         params["updated_since"] = lastUpdate
 
-    totalAdded: int = 0
     with open(outputPath, "a", encoding="utf-8") as file:
         page: int = 1
         while True:
@@ -134,9 +130,10 @@ def syncProject(projectSlug: str) -> None:
                         "quality": observation.get("quality_grade")
                     }
                     file.write(json.dumps(flattened) + "\n")
-                    totalAdded += 1
 
-                if len(results) < 200: break
+                if len(results) < 200: 
+                    break
+
                 page += 1
                 time.sleep(1.2)
                 
@@ -144,12 +141,12 @@ def syncProject(projectSlug: str) -> None:
                 print(f"Sync interrupted: {e}")
                 break
 
-def getLatestUpdate(directory: str = "out") -> str:
+def getLatestUpdate(directory: str = "Research") -> str | None:
     files = glob.glob(os.path.join(directory, "*.jsonl"))
     if not files:
         return None
     
-    latestTime: str = None
+    latestTime: str | None = None
     
     for file in files:
         with open(file, 'r') as f:
@@ -167,7 +164,7 @@ def getLatestUpdate(directory: str = "out") -> str:
                     
     return latestTime
 
-def getIdBounds(projectSlug: str) -> tuple[str, str]:
+def getIdBounds(projectSlug: str) -> tuple[int , int]:
     baseUrl: str = "https://api.inaturalist.org/v1/observations"
 
     paramsMin: dict[str, str] = {"project_id": projectSlug, "order": "asc", "order_by": "id", "per_page": 1}
@@ -176,8 +173,8 @@ def getIdBounds(projectSlug: str) -> tuple[str, str]:
     resMin = requests.get(baseUrl, params=paramsMin).json()
     resMax = requests.get(baseUrl, params=paramsMax).json()
 
-    minId: str = resMin['results'][0]['id']
-    maxId: str = resMax['results'][0]['id']
+    minId: int = int(resMin['results'][0]['id'])
+    maxId: int = int(resMax['results'][0]['id'])
 
     return minId, maxId
 

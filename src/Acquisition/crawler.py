@@ -64,7 +64,7 @@ def extractName(userLinks: set) -> set:
         outLinks.add(element.text)
     return outLinks
 
-def createUserLinks(usersList: set) -> None:
+def createUserLinks(usersList: set) -> set:
     outURLs = set()
     base = "https://inaturalist.org/people/"
     for user in usersList:

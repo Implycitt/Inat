@@ -52,10 +52,10 @@ There are various markdown files in some of the folders for further documentatio
 Each main folder contains a certain part of the research which is described in the following way:
 
 * in -> input files used in the code
-* [research](https://github.com/Implycitt/AveResearch2026/blob/main/Research/research.md) -> research paper in various formats and relevant notes
+* [research](https://github.com/Implycitt/AveResearch2026/blob/main/Research/README.md) -> research paper in various formats and relevant notes
 * Data -> research observations with relevant fields compiled into various formats
 * slides -> notes and slides for presentation
-* [src](https://github.com/Implycitt/AveResearch2026/blob/main/src/src.md) -> all code used described in the Code section
+* [src](https://github.com/Implycitt/AveResearch2026/blob/main/src/README.md) -> all code used described in the Code section
 
 ### Research
 
@@ -71,8 +71,8 @@ They will be available in LaTeX, pdf, and plaintext.
 
 The code used in this project and research is broken up based on the problem that was attempted to be solved:
 
-* [Acquisition phase](https://github.com/Implycitt/AveResearch2026/blob/main/src/Acquisition/acquisition.md)
-* [Data Collection and Analysis phase](https://github.com/Implycitt/AveResearch2026/blob/main/src/Data/data.md)
+* [Acquisition phase](https://github.com/Implycitt/AveResearch2026/blob/main/src/README.md)
+* [Data Collection and Analysis phase](https://github.com/Implycitt/AveResearch2026/blob/main/src/Data/README.md)
 
 The code sections and their respective markdown files document the goal of each file/function and how they work.\
 All code was authored entirely by Quentin Bordelon and any further inquiries should be forwarded to the email listed in the <a href="#Contact"> contact </a> section.\
